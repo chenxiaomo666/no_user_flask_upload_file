@@ -60,12 +60,36 @@ def get_all_files():
     # user = User.query.get(user_id)
 
     file_list = []
-    files = UploadFile.query.filter_by(is_delete=0).all()
+    files = UploadFile.query.filter_by(is_delete=0).order_by(UploadFile.upload_time.desc()).all()
     for file in files:
         cur = {}
+        cur["id"] = file.id
         cur["file_name"] = file.file_name
         cur["file_url"] = file.file_url
         file_list.append(cur)
 
     return render_template("files.html", file_list=file_list)
 
+
+@upload_file.route("/delete", methods=["GET"])
+def delete_file():
+
+    file_id = request.args.get("file_id")
+    file = UploadFile.query.filter_by(is_delete=0, id=file_id).first()
+    file_name = file.file_name
+    print(file_name)
+    db.session.delete(file)
+    file_path = os.path.join(Config.UPLOAD_FOLDER, file_name)
+    os.remove(file_path)
+    db.session.commit()
+
+    file_list = []
+    files = UploadFile.query.filter_by(is_delete=0).order_by(UploadFile.upload_time.desc()).all()
+    for file in files:
+        cur = {}
+        cur["id"] = file.id
+        cur["file_name"] = file.file_name
+        cur["file_url"] = file.file_url
+        file_list.append(cur)
+
+    return render_template("files.html", file_list=file_list)

@@ -6,7 +6,7 @@
 </head>
 <body>
     {% for file in file_list %}
-    查看or下载：<a href="{{ file.file_url }}">{{ file.file_name }}</a>
+    查看or下载：<a href="{{ file.file_url }}">{{ file.file_name }}</a>||<a href="delete?file_id={{ file.id }}">删除</a>
     <br>
     <br>
     {% endfor %}
